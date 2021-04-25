@@ -56,10 +56,24 @@ def EdgeRecognition(images):
     plt.title('Edge Image'), plt.xticks([]), plt.yticks([])
     plt.show()
     
+def CornerRecognition(images):
+    
+    corners = cv2.goodFeaturesToTrack(images,25,0.01,10)
+    corners = np.int0(corners)
+
+    for i in corners:
+        x,y = i.ravel()
+        cv2.circle(images,(x,y),3,255,-1)
+
+    plt.imshow(images),plt.show()
+    cv2.imwrite("Output/Preprocessed/Edges/testcorners.png", images, [cv2.IMWRITE_PNG_COMPRESSION, 0])
+    
 def Preprocess(images):
     
     #Calling both preprocessing functions on same image, to observe difference when implemented against eachother
     Otsu(images)
     EdgeRecognition(images)
-
+    CornerRecognition(images)
+    
+    #Turns out Corner Recognition is not very useful, but tested none the less
     #Turns out not much difference between them
