@@ -9,52 +9,47 @@ from tqdm.notebook import tqdm
 
 #Storing the Images in the Subfolder as a List
 images = {}
-for image in tqdm(os.listdir("Images"), desc = 'Loading Data'):
+for image in tqdm(os.listdir("Images"), desc = 'Loading and Preprocessing Raw Data'):
     
-    images[image] = cv2.imread("Images/" + image, 0)    
-        
+    #Reading and Writing into List
+    images[image] = cv2.imread("Images/" + image, 0)  
+    
+    #Applying Preprocessing Algorithms
+    Preprocess(images[image])
+    
+templates = {}
+for template in tqdm(os.listdir("Templates"), desc = 'Loading and Preprocessing Templates'):
+    
+    #Reading and Writing into List
+    templates[template] = cv2.imread("Templates/Raw/", 0)
+    
+    #Applying Preprocessing Algorithms
+    Templates(templates[template])
 
-#Creating a variable which stores an image
-img = images["0.png"].copy()
-
-#Applying Otsu and Edge Detection
-Preprocess(img)
 
 #Thresholding the Image - Stars would remain to be white pixels 
 def Otsu(images):
-           
-    blur = cv2.GaussianBlur(images,(5,5),0).astype('uint8')
-    ret1,th1 = cv2.threshold(blur, 0, 255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-    #Process is Done by here
     
-    #Saving File    
-    cv2.imwrite("Output/Preprocessed/Otsutest.png" , th1, [cv2.IMWRITE_PNG_COMPRESSION, 0])
+    counter = 0
     
-    #Lists to make Histogram output neater
-    imgs = [blur, 0, th1]
-    titles = ['Gaussian filtered Image','Histogram','Otsu Thresholding']
-   
-    #Histogram and Image Plot, Helps Analyse new Image      
-    plt.subplot(3,3,i*3+1),plt.imshow(imgs[i*3],'gray')
-    plt.title(titles[i*3]), plt.xticks([]), plt.yticks([])
-    plt.subplot(3,3,i*3+2),plt.hist(imgs[i*3].ravel(),256)
-    plt.title(titles[i*3+1]), plt.xticks([]), plt.yticks([])
-    plt.subplot(3,3,i*3+3),plt.imshow(imgs[i*3+2],'gray')
-    plt.title(titles[i*3+2]), plt.xticks([]), plt.yticks([])
-            
-    plt.show()
+    for image in images:
+        
+        blur = cv2.GaussianBlur(images[image],(5,5),0)
+        ret1,th1 = cv2.threshold(blur, 0, 255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+        counter += 1
+
+    cv2.imwrite("Output/Preprocessed/" + str(counter) + ".png" , th1, [cv2.IMWRITE_PNG_COMPRESSION, 0])
+ 
         
 def EdgeRecognition(images):
   
-    #This Function does all the work
-    edges = cv2.Canny(images,100,200)
+    counter = 0
     
-    
-    #Histogram and Image Plot, Helps Analyse new Image
-    cv2.imwrite("Output/Preprocessed/Edges/testedges.png", edges, [cv2.IMWRITE_PNG_COMPRESSION, 0])
-    plt.subplot(122),plt.imshow(edges,cmap = 'gray')
-    plt.title('Edge Image'), plt.xticks([]), plt.yticks([])
-    plt.show()
+    for image in images:
+        edges = cv2.Canny(images[image],100,200)
+        counter += 1
+
+    cv2.imwrite("Output/Preprocessed/Edges/" + str(counter) + ".png", edges, [cv2.IMWRITE_PNG_COMPRESSION, 0])
     
 def CornerRecognition(images):
     
@@ -67,6 +62,24 @@ def CornerRecognition(images):
 
     plt.imshow(images),plt.show()
     cv2.imwrite("Output/Preprocessed/Edges/testcorners.png", images, [cv2.IMWRITE_PNG_COMPRESSION, 0])
+
+def Templates(images):
+    
+    #Thresholding the Image
+    Otsu(images)
+    
+    #Edge Recognition
+    edges = cv2.Canny(images,50,150,apertureSize = 3)
+    
+    #Line Recognition
+    minLineLength = 100
+    maxLineGap = 10
+    lines = cv2.HoughLinesP(edges,1,np.pi/180,100,minLineLength,maxLineGap)
+    
+    for x1,y1,x2,y2 in lines[0]:
+        cv2.line(images,(x1,y1),(x2,y2),(0,255,0),2)
+
+    cv2.imwrite('Templates/Preprocessed/Cancer.png',images)
     
 def Preprocess(images):
     
