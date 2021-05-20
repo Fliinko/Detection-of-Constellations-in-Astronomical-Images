@@ -1,0 +1,6 @@
+opencv
+matplotlib
+numpy
+os
+random 
+tqdm
