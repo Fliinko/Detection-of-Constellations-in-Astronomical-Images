@@ -4,3 +4,13 @@ numpy
 os
 random 
 tqdm
+keras.models 
+tensorflow
+tensorflow_datasets
+keras
+sklearn.tree
+sklearn
+sklearn.utils
+sklearn.model_selection
+PIL
+theano
