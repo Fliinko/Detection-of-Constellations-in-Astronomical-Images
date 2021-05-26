@@ -1,1 +1,2 @@
 https://www.pyimagesearch.com/2016/10/31/detecting-multiple-bright-spots-in-an-image-with-python-and-opencv/
+https://www.instructables.com/Star-Recognition-Using-Computer-Vision-OpenCV/
