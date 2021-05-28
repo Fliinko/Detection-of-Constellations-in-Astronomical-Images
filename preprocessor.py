@@ -97,3 +97,22 @@ cv2.imwrite("Preprocessed/1.png", image, [cv2.IMWRITE_PNG_COMPRESSION, 0])
 cv2.imshow("Image", image)
 cv2.waitKey(0)
 # %%
+
+def PointPlotter(img):
+
+    image = cv2.imread(img)
+    points = [[], []]
+
+    for x in range(image.shape[0]):
+        for y in range(image.shape[1]):
+
+            if(img == (0, 0, 255)):
+                shaper = (x, y)
+                points.append(shaper)
+
+    plt.plot(points[0],points[1])
+    plt.show()
+
+
+PointPlotter("Preprocessed/1.png")
+
